@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Clear failed entries
+        run: python3 reset_nulls.py
       - name: Run geocoding
         run: python3 geocode_stations.py
       - name: Commit coords.json
@@ -25,4 +27,4 @@ jobs:
           git add coords.json
           git diff --cached --quiet || git commit -m "auto: geocode stations [skip ci]"
           git pull --rebase origin main
-          git push 
+          git push
