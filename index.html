@@ -215,7 +215,7 @@ function showMap(uLat,uLon,list){
   if(!el)return;
   if(leafletMap){leafletMap.remove();leafletMap=null;}
   leafletMap=L.map("map-el",{zoomControl:true,attributionControl:false});
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_matter_no_labels/{z}/{x}/{y}{r}.png",{maxZoom:17,subdomains:"abcd"}).addTo(leafletMap);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:""}).addTo(leafletMap);
   var uIcon=L.divIcon({className:"",html:'<div style="width:14px;height:14px;background:#5599ff;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 4px rgba(85,153,255,0.3)"></div>',iconSize:[14,14],iconAnchor:[7,7]});
   L.marker([uLat,uLon],{icon:uIcon}).addTo(leafletMap).bindPopup("\u05d4\u05de\u05d9\u05e7\u05d5\u05dd \u05e9\u05dc\u05da");
   var bounds=[[uLat,uLon]];
