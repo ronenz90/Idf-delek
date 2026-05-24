@@ -115,6 +115,11 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
   <div class="card">
     <div class="section-label">זהה את מיקומך אוטומטית</div>
     <button class="btn-gps" onclick="useMyLocation()">&#128205; השתמש במיקום הנוכחי שלי</button>
+    <div class="divider">או חפש לפי עיר / כתובת</div>
+    <div style="display:flex;gap:8px">
+      <input class="coord-input" type="text" id="city-in" placeholder="למשל: תל אביב, הרצל 10..." style="text-align:right;flex:1" onkeydown="if(event.key==='Enter')searchByCity()" />
+      <button class="btn-search" onclick="searchByCity()" style="margin-top:0;width:auto;padding:10px 14px;font-size:14px;white-space:nowrap">&#128269; חפש</button>
+    </div>
     <div class="divider">או הזן ידנית</div>
     <div class="coords-label">קואורדינטות (קו רוחב, קו אורך)</div>
     <div class="coords-row">
