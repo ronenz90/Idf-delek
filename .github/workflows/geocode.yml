@@ -2,7 +2,7 @@ name: Geocode Stations
 "on":
   push:
     paths:
-      - 'fuel-finder.html'
+      - 'index.html'
       - 'geocode_stations.py'
   workflow_dispatch:
 jobs:
