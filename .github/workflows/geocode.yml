@@ -26,5 +26,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add coords.json
           git diff --cached --quiet || git commit -m "auto: geocode stations [skip ci]"
-          git pull --rebase origin main
+          git push --force
           git push
