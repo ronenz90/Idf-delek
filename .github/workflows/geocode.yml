@@ -1,0 +1,29 @@
+name: Geocode Stations
+"on":
+  push:
+    paths:
+      - 'fuel-finder.html'
+      - 'geocode_stations.py'
+  workflow_dispatch:
+jobs:
+  geocode:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Clear failed entries
+        run: python3 reset_nulls.py
+      - name: Run geocoding
+        run: python3 geocode_stations.py
+      - name: Commit coords.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add coords.json
+          git diff --cached --quiet || git commit -m "auto: geocode stations [skip ci]"
+          git push --force
