@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ניהול — תחנות דלק</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#110b02;--card:#231608;--card2:#2c1c0a;
+  --orange:#f5960a;--orange2:#e07c00;
+  --txt:#f0e8d8;--muted:#9a8870;--faint:#5a4a38;
+  --border:rgba(245,150,10,0.2);--green:#3dbb6a;
+}
+body{font-family:-apple-system,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;direction:rtl;padding-bottom:40px}
+.header{background:var(--orange);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:700;color:#fff}
+.back-btn{font-size:13px;color:rgba(255,255,255,0.85);text-decoration:none;display:flex;align-items:center;gap:5px}
+.content{padding:14px;max-width:600px;margin:0 auto}
+/* Stats row */
+.stats-row{display:flex;gap:10px;margin-bottom:16px}
+.stat-card{flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
+.stat-val{font-size:28px;font-weight:800;color:var(--orange);line-height:1}
+.stat-label{font-size:11px;color:var(--muted);margin-top:4px}
+/* Filter tabs */
+.filter-tabs{display:flex;gap:6px;margin-bottom:14px}
+.tab{flex:1;padding:8px;border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;border:1px solid var(--faint);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.tab.active{background:rgba(245,150,10,0.15);border-color:var(--orange);color:var(--orange)}
+/* Chart */
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
+.chart-title{font-size:13px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.chart-wrap{position:relative;height:200px}
+/* Table */
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.table-header{padding:12px 14px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+.table-row{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px}
+.table-row:last-child{border-bottom:none}
+.table-row .date{color:var(--muted);font-size:13px}
+.table-row .count{font-weight:700;color:var(--orange)}
+.bar-bg{flex:1;height:6px;background:var(--faint);border-radius:3px;margin:0 12px;overflow:hidden}
+.bar-fill{height:6px;background:var(--orange);border-radius:3px;transition:width .4s}
+/* Loading */
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+.spinner{width:32px;height:32px;border:3px solid var(--faint);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error{background:rgba(220,60,60,0.1);border:1px solid rgba(220,60,60,0.3);color:#ff7070;padding:12px;border-radius:10px;font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<!-- Password gate overlay -->
+<div id="pw-gate" style="position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 24px;max-width:320px;width:100%;text-align:center">
+    <div style="font-size:36px;margin-bottom:12px">&#128274;</div>
+    <h2 style="font-size:18px;font-weight:700;color:var(--orange);margin-bottom:6px">פאנל ניהול</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px">הזן סיסמה להמשך</p>
+    <input id="pw-input" type="password" placeholder="סיסמה" autocomplete="off"
+      style="width:100%;padding:12px;background:var(--bg2);border:1px solid var(--faint);border-radius:10px;color:var(--txt);font-size:16px;font-family:inherit;text-align:center;outline:none;-webkit-appearance:none;margin-bottom:10px"
+      onkeydown="if(event.key==='Enter')checkPw()"/>
+    <button onclick="checkPw()"
+      style="width:100%;padding:13px;background:linear-gradient(135deg,#f5960a,#e07c00);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer">
+      כניסה
+    </button>
+    <p id="pw-err" style="color:#ff7070;font-size:13px;margin-top:10px;min-height:18px"></p>
+  </div>
+</div>
+
+<div id="app-content" style="display:none">
+<div class="header">
+  <h1>&#128202; פאנל ניהול</h1>
+  <a href="./index.html" class="back-btn">&#8594; חזרה לאפליקציה</a>
+</div>
+<div class="content">
+  <div id="main-content">
+    <div class="loading"><div class="spinner"></div>טוען נתונים...</div>
+  </div>
+</div>
+</div>
+
+<script>
+var HASH = "1db8a2da32d0872c8d74c26ca155febd1195e9af042ed56b919c98787c5c6424";
+
+async function checkPw() {
+  var pw = document.getElementById("pw-input").value;
+  var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw));
+  var hash = Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+  if (hash === HASH) {
+    sessionStorage.setItem("admin_ok","1");
+    document.getElementById("pw-gate").style.display = "none";
+    document.getElementById("app-content").style.display = "block";
+    init();
+  } else {
+    document.getElementById("pw-err").textContent = "סיסמה שגויה";
+    document.getElementById("pw-input").value = "";
+    document.getElementById("pw-input").focus();
+  }
+}
+
+// Auto-unlock if already authenticated this session
+if (sessionStorage.getItem("admin_ok") === "1") {
+  document.getElementById("pw-gate").style.display = "none";
+  document.getElementById("app-content").style.display = "block";
+  window.addEventListener("DOMContentLoaded", init);
+} else {
+  window.addEventListener("DOMContentLoaded", function(){
+    document.getElementById("pw-input").focus();
+  });
+}
+
+var NS = "ronenz90-idf-delek";
+var chartInstance = null;
+var allData = {}; // date -> count
+var currentPeriod = 30;
+
+function dateStr(d) {
+  return d.toISOString().slice(0,10);
+}
+
+function getDateRange(days) {
+  var dates = [];
+  var now = new Date();
+  for (var i = days-1; i >= 0; i--) {
+    var d = new Date(now);
+    d.setDate(d.getDate() - i);
+    dates.push(dateStr(d));
+  }
+  return dates;
+}
+
+function formatDateHE(dateStr) {
+  var parts = dateStr.split('-');
+  return parts[2] + '/' + parts[1];
+}
+
+function formatDateFull(dateStr) {
+  var parts = dateStr.split('-');
+  var days = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  var d = new Date(dateStr);
+  return days[d.getDay()] + ' ' + parts[2] + '/' + parts[1] + '/' + parts[0];
+}
+
+// Fetch all daily data for last 90 days
+async function fetchAllData() {
+  var dates = getDateRange(90);
+  var fetches = dates.map(function(date) {
+    return fetch("https://api.countapi.xyz/get/" + NS + "/d-" + date)
+      .then(function(r) { return r.json(); })
+      .then(function(d) { return {date: date, count: d.value || 0}; })
+      .catch(function() { return {date: date, count: 0}; });
+  });
+  var results = await Promise.all(fetches);
+  results.forEach(function(r) { allData[r.date] = r.count; });
+  return allData;
+}
+
+async function fetchTotal() {
+  try {
+    var r = await fetch("https://api.countapi.xyz/get/" + NS + "/visits");
+    var d = await r.json();
+    return d.value || 0;
+  } catch(e) { return 0; }
+}
+
+function sumForDates(dates) {
+  return dates.reduce(function(sum, d) { return sum + (allData[d] || 0); }, 0);
+}
+
+function renderPeriod(days) {
+  currentPeriod = days;
+  var dates = getDateRange(days);
+
+  // Aggregate based on period
+  var labels = [], values = [], tableRows = [];
+
+  if (days === 7) {
+    // Daily for 7 days
+    dates.forEach(function(d) {
+      labels.push(formatDateHE(d));
+      values.push(allData[d] || 0);
+      tableRows.push({label: formatDateFull(d), count: allData[d] || 0});
+    });
+  } else if (days === 30) {
+    // Daily for 30 days
+    dates.forEach(function(d) {
+      labels.push(formatDateHE(d));
+      values.push(allData[d] || 0);
+      tableRows.push({label: formatDateFull(d), count: allData[d] || 0});
+    });
+  } else {
+    // Weekly aggregation for 90 days
+    for (var i = 0; i < 13; i++) {
+      var weekDates = dates.slice(i*7, i*7+7);
+      if (!weekDates.length) break;
+      var weekSum = sumForDates(weekDates);
+      var label = formatDateHE(weekDates[0]) + '-' + formatDateHE(weekDates[weekDates.length-1]);
+      labels.push(label);
+      values.push(weekSum);
+      tableRows.push({label: label, count: weekSum});
+    }
+  }
+
+  var total = sumForDates(dates);
+  var avg = total > 0 ? Math.round(total / (days === 90 ? 13 : days)) : 0;
+  var max = Math.max.apply(null, values);
+
+  // Update tabs
+  document.querySelectorAll('.tab').forEach(function(t) {
+    t.classList.toggle('active', parseInt(t.dataset.days) === days);
+  });
+
+  // Update summary cards
+  document.getElementById('stat-period').textContent = Number(total).toLocaleString();
+  document.getElementById('stat-avg').textContent = Number(avg).toLocaleString();
+  document.getElementById('stat-max').textContent = Number(max).toLocaleString();
+  document.getElementById('stat-label-period').textContent = days === 7 ? '7 ימים אחרונים' : days === 30 ? '30 ימים אחרונים' : '90 ימים אחרונים';
+  document.getElementById('stat-label-avg').textContent = days === 90 ? 'ממוצע שבועי' : 'ממוצע יומי';
+
+  // Update chart
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+  var ctx = document.getElementById('visits-chart').getContext('2d');
+  chartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values,
+        backgroundColor: 'rgba(245,150,10,0.7)',
+        borderColor: 'rgba(245,150,10,1)',
+        borderWidth: 1,
+        borderRadius: 4,
+        hoverBackgroundColor: 'rgba(245,150,10,0.9)'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: function(ctx) { return ' ' + ctx.raw + ' כניסות'; } }
+      }},
+      scales: {
+        x: { ticks: { color: '#9a8870', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: '#9a8870', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.06)' }, beginAtZero: true }
+      }
+    }
+  });
+
+  // Update table (show only non-zero, sorted desc)
+  var sorted = tableRows.slice().sort(function(a,b) { return b.count - a.count; });
+  var maxVal = sorted[0] ? sorted[0].count : 1;
+  var tableHtml = sorted.slice(0, 15).map(function(row) {
+    var pct = maxVal > 0 ? Math.round(row.count / maxVal * 100) : 0;
+    return '<div class="table-row">' +
+      '<span class="date">' + row.label + '</span>' +
+      '<div class="bar-bg"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
+      '<span class="count">' + row.count + '</span>' +
+      '</div>';
+  }).join('');
+  document.getElementById('table-body').innerHTML = tableHtml || '<div style="padding:14px;color:var(--muted);text-align:center;font-size:13px">אין נתונים לתקופה זו</div>';
+}
+
+async function init() {
+  try {
+    var [data, total] = await Promise.all([fetchAllData(), fetchTotal()]);
+
+    var today = allData[dateStr(new Date())] || 0;
+
+    document.getElementById('main-content').innerHTML =
+      '<div class="stats-row">' +
+        '<div class="stat-card"><div class="stat-val">' + Number(total).toLocaleString() + '</div><div class="stat-label">סה"כ כניסות</div></div>' +
+        '<div class="stat-card"><div class="stat-val" id="stat-period">-</div><div class="stat-label" id="stat-label-period">תקופה</div></div>' +
+        '<div class="stat-card"><div class="stat-val">' + today + '</div><div class="stat-label">היום</div></div>' +
+      '</div>' +
+      '<div class="filter-tabs">' +
+        '<button class="tab" data-days="7" onclick="renderPeriod(7)">7 ימים</button>' +
+        '<button class="tab active" data-days="30" onclick="renderPeriod(30)">30 ימים</button>' +
+        '<button class="tab" data-days="90" onclick="renderPeriod(90)">90 ימים</button>' +
+      '</div>' +
+      '<div class="chart-card">' +
+        '<div class="chart-title"><span>&#128202; גרף כניסות</span><span id="stat-avg" style="color:var(--orange);font-weight:700">-</span> <span id="stat-label-avg" style="font-size:11px;color:var(--muted)">ממוצע יומי</span></div>' +
+        '<div class="chart-wrap"><canvas id="visits-chart"></canvas></div>' +
+      '</div>' +
+      '<div class="table-card">' +
+        '<div class="table-header"><span>תאריך</span><span>&#128205; כניסות  <span id="stat-max" style="color:var(--orange)">-</span> שיא</span></div>' +
+        '<div id="table-body"><div class="loading" style="padding:20px">...</div></div>' +
+      '</div>';
+
+    renderPeriod(30);
+  } catch(e) {
+    document.getElementById('main-content').innerHTML =
+      '<div class="error">שגיאה בטעינת נתונים. ודא שהאפליקציה עלתה ב-GitHub Pages.</div>';
+  }
+}
+
+// init() is called after successful login above
+</script>
+</body>
+</html>
