@@ -143,14 +143,21 @@ function formatDateFull(dateStr) {
 // Fetch all daily data for last 90 days
 async function fetchAllData() {
   var dates = getDateRange(90);
-  var fetches = dates.map(function(date) {
-    return fetch("https://countapi.mileshilliard.com/api/v1/get/" + NS + "-d-" + date)
-      .then(function(r) { return r.json(); })
-      .then(function(d) { return {date: date, count: d.value || 0}; })
-      .catch(function() { return {date: date, count: 0}; });
-  });
-  var results = await Promise.all(fetches);
-  results.forEach(function(r) { allData[r.date] = r.count; });
+  // Fetch in batches of 10 to avoid rate limiting
+  var BATCH = 10;
+  for (var i = 0; i < dates.length; i += BATCH) {
+    var batch = dates.slice(i, i + BATCH);
+    var results = await Promise.all(batch.map(function(date) {
+      return fetch("https://countapi.mileshilliard.com/api/v1/get/" + NS + "-d-" + date)
+        .then(function(r) { return r.json(); })
+        .then(function(d) { return {date: date, count: d.value || 0}; })
+        .catch(function() { return {date: date, count: 0}; });
+    }));
+    results.forEach(function(r) { allData[r.date] = r.count; });
+    if (i + BATCH < dates.length) {
+      await new Promise(function(res) { setTimeout(res, 300); });
+    }
+  }
   return allData;
 }
 
@@ -261,7 +268,8 @@ function renderPeriod(days) {
 
 async function init() {
   try {
-    var [data, total] = await Promise.all([fetchAllData(), fetchTotal()]);
+    var total = await fetchTotal();
+    var data = await fetchAllData();
 
     var today = allData[dateStr(new Date())] || 0;
 
