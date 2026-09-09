@@ -74,6 +74,7 @@ body{font-family:-apple-system,"Segoe UI",Tahoma,sans-serif;background:var(--bg)
   <div id="main-content">
     <div class="loading"><div class="spinner"></div>טוען נתונים...</div>
   </div>
+  <pre id="dbg" style="background:#111;color:#0f0;padding:10px;font-size:11px;border-radius:8px;margin-top:10px;white-space:pre-wrap;word-break:break-all"></pre>
 </div>
 </div>
 
@@ -165,8 +166,12 @@ async function fetchTotal() {
   try {
     var r = await fetch("https://countapi.mileshilliard.com/api/v1/get/" + NS + "-visits");
     var d = await r.json();
+    document.getElementById('dbg').textContent += "total OK: " + JSON.stringify(d) + "\n";
     return d.value || 0;
-  } catch(e) { return 0; }
+  } catch(e) {
+    document.getElementById('dbg').textContent += "total ERR: " + e + "\n";
+    return 0;
+  }
 }
 
 function sumForDates(dates) {
