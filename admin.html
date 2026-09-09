@@ -149,9 +149,9 @@ async function fetchAllData() {
   for (var i = 0; i < dates.length; i += BATCH) {
     var batch = dates.slice(i, i + BATCH);
     var results = await Promise.all(batch.map(function(date) {
-      return fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent("https://countapi.mileshilliard.com/api/v1/get/" + NS + "-d-" + date))
+      return fetch("https://api.allorigins.win/get?url=" + encodeURIComponent("https://countapi.mileshilliard.com/api/v1/get/" + NS + "-d-" + date))
         .then(function(r) { return r.json(); })
-        .then(function(d) { return {date: date, count: d.value || 0}; })
+        .then(function(w) { var d = JSON.parse(w.contents); return {date: date, count: d.value || 0}; })
         .catch(function() { return {date: date, count: 0}; });
     }));
     results.forEach(function(r) { allData[r.date] = r.count; });
@@ -165,8 +165,9 @@ async function fetchAllData() {
 async function fetchTotal() {
   var url = "https://countapi.mileshilliard.com/api/v1/get/" + NS + "-visits";
   try {
-    var r = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(url));
-    var d = await r.json();
+    var r = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(url));
+    var wrapper = await r.json();
+    var d = JSON.parse(wrapper.contents);
     document.getElementById('dbg').textContent += "total OK: " + JSON.stringify(d) + "\n";
     return d.value || 0;
   } catch(e) {
