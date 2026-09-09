@@ -17,20 +17,20 @@ html,body{width:100%;overflow-x:hidden}
 body{font-family:-apple-system,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;direction:rtl;padding-bottom:40px}
 .header{background:var(--orange);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
 .header h1{font-size:18px;font-weight:700;color:#fff}
-.back-btn{font-size:13px;color:rgba(255,255,255,0.85);text-decoration:none;display:flex;align-items:center;gap:5px}
+.back-btn{font-size:13px;color:rgba(255,255,255,0.85);text-decoration:none}
 .content{padding:14px;max-width:600px;margin:0 auto}
 .stats-row{display:flex;gap:10px;margin-bottom:16px}
 .stat-card{flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
 .stat-val{font-size:28px;font-weight:800;color:var(--orange);line-height:1}
 .stat-label{font-size:11px;color:var(--muted);margin-top:4px}
 .filter-tabs{display:flex;gap:6px;margin-bottom:14px}
-.tab{flex:1;padding:8px;border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;border:1px solid var(--faint);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.tab{flex:1;padding:8px;border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;border:1px solid var(--faint);background:var(--card);color:var(--muted);cursor:pointer;transition:all .2s}
 .tab.active{background:rgba(245,150,10,0.15);border-color:var(--orange);color:var(--orange)}
 .chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
 .chart-title{font-size:13px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
 .chart-wrap{position:relative;height:200px}
 .table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
-.table-header{padding:12px 14px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+.table-header{padding:12px 14px;font-size:12px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
 .table-row{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px}
 .table-row:last-child{border-bottom:none}
 .table-row .date{color:var(--muted);font-size:13px}
@@ -41,29 +41,23 @@ body{font-family:-apple-system,"Segoe UI",Tahoma,sans-serif;background:var(--bg)
 .spinner{width:32px;height:32px;border:3px solid var(--faint);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .error-box{background:rgba(220,60,60,0.1);border:1px solid rgba(220,60,60,0.3);color:#ff7070;padding:12px;border-radius:10px;font-size:13px;text-align:center}
-/* Password gate */
 #pw-gate{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
 .pw-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 24px;max-width:320px;width:100%;text-align:center}
-.pw-icon{font-size:36px;margin-bottom:12px}
-.pw-title{font-size:18px;font-weight:700;color:var(--orange);margin-bottom:6px}
-.pw-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
-.pw-input{width:100%;padding:12px;background:var(--bg2);border:1px solid var(--faint);border-radius:10px;color:var(--txt);font-size:16px;font-family:inherit;text-align:center;outline:none;-webkit-appearance:none;margin-bottom:10px}
+.pw-input{width:100%;padding:12px;background:var(--bg2);border:1px solid var(--faint);border-radius:10px;color:var(--txt);font-size:16px;font-family:inherit;text-align:center;outline:none;margin-bottom:10px}
 .pw-btn{width:100%;padding:13px;background:linear-gradient(135deg,#f5960a,#e07c00);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
-.pw-err{color:#ff7070;font-size:13px;margin-top:10px;min-height:18px}
 #app-content{display:none}
 </style>
 </head>
 <body>
-
 <div id="pw-gate">
   <div class="pw-box">
-    <div class="pw-icon">&#128274;</div>
-    <div class="pw-title">פאנל ניהול</div>
-    <div class="pw-sub">הזן סיסמה להמשך</div>
+    <div style="font-size:36px;margin-bottom:12px">&#128274;</div>
+    <div style="font-size:18px;font-weight:700;color:var(--orange);margin-bottom:6px">פאנל ניהול</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px">הזן סיסמה להמשך</div>
     <input id="pw-input" class="pw-input" type="password" placeholder="סיסמה" autocomplete="off"
       onkeydown="if(event.key==='Enter')checkPw()"/>
     <button class="pw-btn" onclick="checkPw()">כניסה</button>
-    <div class="pw-err" id="pw-err"></div>
+    <div id="pw-err" style="color:#ff7070;font-size:13px;margin-top:10px;min-height:18px"></div>
   </div>
 </div>
 
@@ -81,12 +75,8 @@ body{font-family:-apple-system,"Segoe UI",Tahoma,sans-serif;background:var(--bg)
 
 <script>
 var HASH = "1db8a2da32d0872c8d74c26ca155febd1195e9af042ed56b919c98787c5c6424";
-var GC_BASE = "https://drone.goatcounter.com/api/v0";
-var GC_TOKEN = "4dhrgsmmzmlm1dd26yivjopzpdnm7cvovj4u81m9ge0sls2l9f";
-
-var allData = {};
-var chartInstance = null;
-var currentPeriod = 30;
+var BASE = "https://api.counterapi.dev/v1/idf-delek";
+var allData = {}, chartInstance = null;
 
 async function checkPw() {
   var pw = document.getElementById("pw-input").value;
@@ -109,180 +99,107 @@ if (sessionStorage.getItem("admin_ok") === "1") {
   document.getElementById("app-content").style.display = "block";
   window.addEventListener("load", init);
 } else {
-  window.addEventListener("load", function(){
-    document.getElementById("pw-input").focus();
-  });
+  window.addEventListener("load", function(){ document.getElementById("pw-input").focus(); });
 }
 
-function dateStr(d) { return d.toISOString().slice(0,10); }
+function dateStr(d){ return d.toISOString().slice(0,10); }
+function getDateRange(n){
+  var arr=[], now=new Date();
+  for(var i=n-1;i>=0;i--){var d=new Date(now);d.setDate(d.getDate()-i);arr.push(dateStr(d));}
+  return arr;
+}
+function fmtHE(s){var p=s.split('-');return p[2]+'/'+p[1];}
+function fmtFull(s){var p=s.split('-');var days=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];return days[new Date(s).getDay()]+' '+p[2]+'/'+p[1]+'/'+p[0];}
+function sum(arr){return arr.reduce(function(a,d){return a+(allData[d]||0);},0);}
 
-function getDateRange(days) {
-  var dates = [], now = new Date();
-  for (var i = days-1; i >= 0; i--) {
-    var d = new Date(now);
-    d.setDate(d.getDate() - i);
-    dates.push(dateStr(d));
+async function getCount(key){
+  var r = await fetch(BASE+"/"+key);
+  var d = await r.json();
+  return d.count || 0;
+}
+
+async function fetchAllData(){
+  var dates = getDateRange(90);
+  var BATCH = 10;
+  for(var i=0;i<dates.length;i+=BATCH){
+    var batch = dates.slice(i,i+BATCH);
+    var results = await Promise.all(batch.map(function(date){
+      return fetch(BASE+"/d-"+date)
+        .then(function(r){return r.json();})
+        .then(function(d){return {date:date,count:d.count||0};})
+        .catch(function(){return {date:date,count:0};});
+    }));
+    results.forEach(function(r){allData[r.date]=r.count;});
+    if(i+BATCH<dates.length) await new Promise(function(res){setTimeout(res,200);});
   }
-  return dates;
 }
 
-function formatDateHE(s) {
-  var p = s.split('-');
-  return p[2]+'/'+p[1];
-}
-
-function formatDateFull(s) {
-  var p = s.split('-');
-  var days = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-  return days[new Date(s).getDay()]+' '+p[2]+'/'+p[1]+'/'+p[0];
-}
-
-async function gcFetch(path) {
-  var r = await fetch(GC_BASE + path, {
-    headers: { "Authorization": "Bearer " + GC_TOKEN }
-  });
-  if (!r.ok) throw new Error("HTTP " + r.status);
-  return r.json();
-}
-
-async function fetchStats(days) {
-  var end = new Date();
-  var start = new Date();
-  start.setDate(start.getDate() - days + 1);
-  var url = "/stats/hits?period-start=" + dateStr(start) + "&period-end=" + dateStr(end) + "&daily=true&limit=200";
-  var data = await gcFetch(url);
-
-  // Aggregate daily across all paths
-  var daily = {};
-  if (data.hits) {
-    data.hits.forEach(function(hit) {
-      if (hit.stats) {
-        hit.stats.forEach(function(s) {
-          daily[s.day] = (daily[s.day] || 0) + (s.daily || 0);
-        });
-      }
-    });
-  }
-  return { daily: daily, total: data.total || 0 };
-}
-
-async function fetchTotal() {
-  var end = new Date();
-  var start = new Date("2020-01-01");
-  var url = "/stats/hits?period-start=" + dateStr(start) + "&period-end=" + dateStr(end) + "&limit=1";
-  var data = await gcFetch(url);
-  return data.total || 0;
-}
-
-function sumDates(dates) {
-  return dates.reduce(function(s,d) { return s + (allData[d] || 0); }, 0);
-}
-
-function renderPeriod(days) {
-  currentPeriod = days;
-  var dates = getDateRange(days);
-  var labels = [], values = [], tableRows = [];
-
-  if (days <= 30) {
-    dates.forEach(function(d) {
-      labels.push(formatDateHE(d));
-      values.push(allData[d] || 0);
-      tableRows.push({label: formatDateFull(d), count: allData[d] || 0});
-    });
+function renderPeriod(days){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',parseInt(t.dataset.days)===days);});
+  var dates=getDateRange(days), labels=[], values=[], rows=[];
+  if(days<=30){
+    dates.forEach(function(d){labels.push(fmtHE(d));values.push(allData[d]||0);rows.push({l:fmtFull(d),c:allData[d]||0});});
   } else {
-    for (var i = 0; i < Math.ceil(dates.length/7); i++) {
-      var week = dates.slice(i*7, i*7+7);
-      if (!week.length) break;
-      var sum = sumDates(week);
-      var lbl = formatDateHE(week[0])+'-'+formatDateHE(week[week.length-1]);
-      labels.push(lbl); values.push(sum);
-      tableRows.push({label: lbl, count: sum});
+    for(var i=0;i<Math.ceil(dates.length/7);i++){
+      var w=dates.slice(i*7,i*7+7);if(!w.length)break;
+      var s=sum(w),l=fmtHE(w[0])+'-'+fmtHE(w[w.length-1]);
+      labels.push(l);values.push(s);rows.push({l:l,c:s});
     }
   }
-
-  var total = sumDates(dates);
-  var avg = total > 0 ? Math.round(total / (days > 30 ? Math.ceil(days/7) : days)) : 0;
-  var max = values.length ? Math.max.apply(null, values) : 0;
-
-  document.querySelectorAll('.tab').forEach(function(t) {
-    t.classList.toggle('active', parseInt(t.dataset.days) === days);
+  var tot=sum(dates), avg=tot>0?Math.round(tot/(days>30?Math.ceil(days/7):days)):0, mx=values.length?Math.max.apply(null,values):0;
+  document.getElementById('stat-period').textContent=Number(tot).toLocaleString();
+  document.getElementById('stat-avg').textContent=Number(avg).toLocaleString();
+  document.getElementById('stat-max').textContent=Number(mx).toLocaleString();
+  document.getElementById('stat-label-period').textContent=days===7?'7 ימים אחרונים':days===30?'30 ימים אחרונים':'90 ימים אחרונים';
+  document.getElementById('stat-label-avg').textContent=days>30?'ממוצע שבועי':'ממוצע יומי';
+  if(chartInstance){chartInstance.destroy();chartInstance=null;}
+  chartInstance=new Chart(document.getElementById('visits-chart').getContext('2d'),{
+    type:'bar',
+    data:{labels:labels,datasets:[{data:values,backgroundColor:'rgba(245,150,10,0.7)',borderColor:'rgba(245,150,10,1)',borderWidth:1,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ' '+ctx.raw+' כניסות';}}}},
+      scales:{x:{ticks:{color:'#9a8870',font:{size:10},maxRotation:45},grid:{color:'rgba(255,255,255,0.04)'}},
+              y:{ticks:{color:'#9a8870',font:{size:10}},grid:{color:'rgba(255,255,255,0.06)'},beginAtZero:true}}}
   });
-  document.getElementById('stat-period').textContent = Number(total).toLocaleString();
-  document.getElementById('stat-avg').textContent = Number(avg).toLocaleString();
-  document.getElementById('stat-max').textContent = Number(max).toLocaleString();
-  document.getElementById('stat-label-period').textContent = days === 7 ? '7 ימים אחרונים' : days === 30 ? '30 ימים אחרונים' : '90 ימים אחרונים';
-  document.getElementById('stat-label-avg').textContent = days > 30 ? 'ממוצע שבועי' : 'ממוצע יומי';
-
-  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
-  var ctx = document.getElementById('visits-chart').getContext('2d');
-  chartInstance = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: values,
-        backgroundColor: 'rgba(245,150,10,0.7)',
-        borderColor: 'rgba(245,150,10,1)',
-        borderWidth: 1, borderRadius: 4,
-        hoverBackgroundColor: 'rgba(245,150,10,0.9)'
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: {
-        callbacks: { label: function(ctx) { return ' ' + ctx.raw + ' כניסות'; } }
-      }},
-      scales: {
-        x: { ticks: { color:'#9a8870', font:{size:10}, maxRotation:45 }, grid:{color:'rgba(255,255,255,0.04)'} },
-        y: { ticks: { color:'#9a8870', font:{size:10} }, grid:{color:'rgba(255,255,255,0.06)'}, beginAtZero:true }
-      }
-    }
-  });
-
-  var sorted = tableRows.slice().sort(function(a,b){return b.count-a.count;});
-  var maxVal = sorted[0] ? sorted[0].count : 1;
-  document.getElementById('table-body').innerHTML = sorted.slice(0,15).map(function(row) {
-    var pct = maxVal > 0 ? Math.round(row.count/maxVal*100) : 0;
-    return '<div class="table-row"><span class="date">'+row.label+'</span>' +
-      '<div class="bar-bg"><div class="bar-fill" style="width:'+pct+'%"></div></div>' +
-      '<span class="count">'+row.count+'</span></div>';
-  }).join('') || '<div style="padding:14px;color:var(--muted);text-align:center;font-size:13px">אין נתונים</div>';
+  var sorted=rows.slice().sort(function(a,b){return b.c-a.c;});
+  var maxV=sorted[0]?sorted[0].c:1;
+  document.getElementById('table-body').innerHTML=sorted.slice(0,15).map(function(r){
+    var pct=maxV>0?Math.round(r.c/maxV*100):0;
+    return '<div class="table-row"><span class="date">'+r.l+'</span>'+
+      '<div class="bar-bg"><div class="bar-fill" style="width:'+pct+'%"></div></div>'+
+      '<span class="count">'+r.c+'</span></div>';
+  }).join('')||'<div style="padding:14px;color:var(--muted);text-align:center;font-size:13px">אין נתונים</div>';
 }
 
-async function init() {
+async function init(){
   try {
-    var total = await fetchTotal();
-    var stats90 = await fetchStats(90);
-    allData = stats90.daily;
-
-    var today = allData[dateStr(new Date())] || 0;
-
-    document.getElementById('main-content').innerHTML =
-      '<div class="stats-row">' +
-        '<div class="stat-card"><div class="stat-val">'+Number(total).toLocaleString()+'</div><div class="stat-label">סה"כ כניסות</div></div>' +
-        '<div class="stat-card"><div class="stat-val" id="stat-period">-</div><div class="stat-label" id="stat-label-period">תקופה</div></div>' +
-        '<div class="stat-card"><div class="stat-val">'+today+'</div><div class="stat-label">היום</div></div>' +
-      '</div>' +
-      '<div class="filter-tabs">' +
-        '<button class="tab" data-days="7" onclick="renderPeriod(7)">7 ימים</button>' +
-        '<button class="tab active" data-days="30" onclick="renderPeriod(30)">30 ימים</button>' +
-        '<button class="tab" data-days="90" onclick="renderPeriod(90)">90 ימים</button>' +
-      '</div>' +
-      '<div class="chart-card">' +
-        '<div class="chart-title"><span>&#128202; גרף כניסות</span>' +
-        '<span><span id="stat-avg" style="color:var(--orange);font-weight:700">-</span> <span id="stat-label-avg" style="font-size:11px;color:var(--muted)">ממוצע יומי</span></span></div>' +
-        '<div class="chart-wrap"><canvas id="visits-chart"></canvas></div>' +
-      '</div>' +
-      '<div class="table-card">' +
-        '<div class="table-header"><span>תאריך</span>' +
-        '<span>&#128205; שיא <span id="stat-max" style="color:var(--orange)">-</span></span></div>' +
-        '<div id="table-body"></div>' +
+    var total = await getCount("visits");
+    await fetchAllData();
+    var today = allData[dateStr(new Date())]||0;
+    document.getElementById('main-content').innerHTML=
+      '<div class="stats-row">'+
+        '<div class="stat-card"><div class="stat-val">'+Number(total).toLocaleString()+'</div><div class="stat-label">סה"כ כניסות</div></div>'+
+        '<div class="stat-card"><div class="stat-val" id="stat-period">-</div><div class="stat-label" id="stat-label-period">תקופה</div></div>'+
+        '<div class="stat-card"><div class="stat-val">'+today+'</div><div class="stat-label">היום</div></div>'+
+      '</div>'+
+      '<div class="filter-tabs">'+
+        '<button class="tab" data-days="7" onclick="renderPeriod(7)">7 ימים</button>'+
+        '<button class="tab active" data-days="30" onclick="renderPeriod(30)">30 ימים</button>'+
+        '<button class="tab" data-days="90" onclick="renderPeriod(90)">90 ימים</button>'+
+      '</div>'+
+      '<div class="chart-card">'+
+        '<div class="chart-title"><span>&#128202; גרף כניסות</span>'+
+        '<span><span id="stat-avg" style="color:var(--orange);font-weight:700">-</span> '+
+        '<span id="stat-label-avg" style="font-size:11px;color:var(--muted)">ממוצע יומי</span></span></div>'+
+        '<div class="chart-wrap"><canvas id="visits-chart"></canvas></div>'+
+      '</div>'+
+      '<div class="table-card">'+
+        '<div class="table-header"><span>תאריך</span><span>&#128205; שיא <span id="stat-max" style="color:var(--orange)">-</span></span></div>'+
+        '<div id="table-body"></div>'+
       '</div>';
-
     renderPeriod(30);
   } catch(e) {
-    document.getElementById('main-content').innerHTML =
-      '<div class="error-box">שגיאה בטעינת נתונים: ' + e.message + '</div>';
+    document.getElementById('main-content').innerHTML='<div class="error-box">שגיאה: '+e.message+'</div>';
   }
 }
 </script>
