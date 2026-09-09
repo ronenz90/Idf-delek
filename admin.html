@@ -75,7 +75,7 @@ body{font-family:-apple-system,"Segoe UI",Tahoma,sans-serif;background:var(--bg)
 
 <script>
 var HASH = "1db8a2da32d0872c8d74c26ca155febd1195e9af042ed56b919c98787c5c6424";
-var BASE = "https://api.counterapi.dev/v1/idf-delek";
+
 var allData = {}, chartInstance = null;
 
 async function checkPw() {
@@ -112,25 +112,43 @@ function fmtHE(s){var p=s.split('-');return p[2]+'/'+p[1];}
 function fmtFull(s){var p=s.split('-');var days=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];return days[new Date(s).getDay()]+' '+p[2]+'/'+p[1]+'/'+p[0];}
 function sum(arr){return arr.reduce(function(a,d){return a+(allData[d]||0);},0);}
 
-async function getCount(key){
-  var r = await fetch(BASE+"/"+key);
-  var d = await r.json();
-  return d.count || 0;
+var BASE_CM = "https://countapi.mileshilliard.com/api/v1";
+var NS = "ronenz90-idf-delek";
+
+function jsonpGet(key) {
+  return new Promise(function(resolve) {
+    var cbName = 'gc_' + Math.random().toString(36).slice(2);
+    var done = false;
+    var timer = setTimeout(function() {
+      if (!done) { done=true; cleanup(); resolve(0); }
+    }, 8000);
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cbName];
+      var el = document.getElementById('jsonp_'+cbName);
+      if (el) el.parentNode.removeChild(el);
+    }
+    window[cbName] = function(data) {
+      if (!done) { done=true; cleanup(); resolve(data.value || 0); }
+    };
+    var s = document.createElement('script');
+    s.id = 'jsonp_' + cbName;
+    s.onerror = function() { if (!done) { done=true; cleanup(); resolve(0); } };
+    s.src = BASE_CM + "/get/" + NS + "-" + key + "?callback=" + cbName;
+    document.head.appendChild(s);
+  });
+}
+
+async function getCount(key) {
+  return jsonpGet(key);
 }
 
 async function fetchAllData(){
   var dates = getDateRange(90);
-  var BATCH = 10;
-  for(var i=0;i<dates.length;i+=BATCH){
-    var batch = dates.slice(i,i+BATCH);
-    var results = await Promise.all(batch.map(function(date){
-      return fetch(BASE+"/d-"+date)
-        .then(function(r){return r.json();})
-        .then(function(d){return {date:date,count:d.count||0};})
-        .catch(function(){return {date:date,count:0};});
-    }));
-    results.forEach(function(r){allData[r.date]=r.count;});
-    if(i+BATCH<dates.length) await new Promise(function(res){setTimeout(res,200);});
+  for(var i=0;i<dates.length;i++){
+    var count = await jsonpGet("d-"+dates[i]);
+    allData[dates[i]] = count;
+    await new Promise(function(res){setTimeout(res,100);});
   }
 }
 

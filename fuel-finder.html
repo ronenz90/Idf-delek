@@ -281,12 +281,12 @@ function doSearchFromCoords(){
 (function(){
   var today=new Date().toISOString().slice(0,10);
   var ns="idf-delek";
-  var base="https://api.counterapi.dev/v1/"+ns;
-  fetch(base+"/visits/up")
+  var base="https://countapi.mileshilliard.com/api/v1";
+  fetch(base+"/hit/"+ns+"-visits")
     .then(function(r){return r.json();})
-    .then(function(d){var el=document.getElementById("visit-count");if(el&&d.count!=null)el.textContent=Number(d.count).toLocaleString();})
+    .then(function(d){var el=document.getElementById("visit-count");if(el&&d.value!=null)el.textContent=Number(d.value).toLocaleString();})
     .catch(function(){});
-  fetch(base+"/d-"+today+"/up").catch(function(){});
+  fetch(base+"/hit/"+ns+"-d-"+today).catch(function(){});
 })();
 // Feedback
 function openFeedback(){
