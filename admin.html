@@ -141,38 +141,11 @@ function formatDateFull(dateStr) {
 }
 
 // Fetch all daily data for last 90 days
-async function fetchAllData() {
-  // Fetch ALL data from app launch
-  var launchDate = new Date("2026-05-24T00:00:00Z");
-  var today = new Date();
-  var dates = [];
-  for (var dd = new Date(launchDate); dd <= today; dd.setUTCDate(dd.getUTCDate()+1)) {
-    dates.push(dd.toISOString().slice(0,10));
-  }
-  // Fetch in batches of 10 to avoid rate limiting
-  var BATCH = 10;
-  for (var i = 0; i < dates.length; i += BATCH) {
-    var batch = dates.slice(i, i + BATCH);
-    var results = await Promise.all(batch.map(function(date) {
-      return fetch("https://countapi.mileshilliard.com/api/v1/get/" + NS + "-d-" + date)
-        .then(function(r) { return r.json(); })
-        .then(function(d) { return {date: date, count: d.value || 0}; })
-        .catch(function() { return {date: date, count: 0}; });
-    }));
-    results.forEach(function(r) { allData[r.date] = r.count; });
-    if (i + BATCH < dates.length) {
-      await new Promise(function(res) { setTimeout(res, 300); });
-    }
-  }
-  return allData;
-}
-
-async function fetchTotal() {
-  try {
-    var r = await fetch("https://countapi.mileshilliard.com/api/v1/get/" + NS + "-visits");
-    var d = await r.json();
-    return d.value || 0;
-  } catch(e) { return 0; }
+async function loadStats() {
+  var r = await fetch("./stats.json?t=" + Date.now());
+  var data = await r.json();
+  allData = data.daily || {};
+  return data.total || 0;
 }
 
 function sumForDates(dates) {
@@ -274,8 +247,7 @@ function renderPeriod(days) {
 
 async function init() {
   try {
-    var total = await fetchTotal();
-    var data = await fetchAllData();
+    var total = await loadStats();
 
     var today = allData[dateStr(new Date())] || 0;
 
@@ -300,12 +272,11 @@ async function init() {
       '</div>';
 
     renderPeriod(30);
-    // Show first recorded date
-    var sortedDates = Object.keys(allData).filter(function(d){return allData[d]>0;}).sort();
-    if (sortedDates.length > 0) {
-      var p = sortedDates[0].split('-');
+    var allDays = Object.keys(allData).filter(function(d){return allData[d]>0;}).sort();
+    if (allDays.length > 0) {
+      var p = allDays[0].split('-');
       var el = document.getElementById('first-date');
-      if (el) el.textContent = 'מאז ' + p[2] + '/' + p[1] + '/' + p[0];
+      if (el) el.textContent = 'מאז '+p[2]+'/'+p[1]+'/'+p[0];
     }
   } catch(e) {
     document.getElementById('main-content').innerHTML =
