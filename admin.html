@@ -142,12 +142,12 @@ function formatDateFull(dateStr) {
 
 // Fetch all daily data for last 90 days
 async function fetchAllData() {
-  // Fetch ALL data from app launch date (May 24, 2026)
-  var launch = new Date("2026-05-24");
-  var now = new Date();
+  // Fetch ALL data from app launch
+  var launchDate = new Date("2026-05-24T00:00:00Z");
+  var today = new Date();
   var dates = [];
-  for (var d = new Date(launch); d <= now; d.setDate(d.getDate() + 1)) {
-    dates.push(dateStr(new Date(d)));
+  for (var dd = new Date(launchDate); dd <= today; dd.setUTCDate(dd.getUTCDate()+1)) {
+    dates.push(dd.toISOString().slice(0,10));
   }
   // Fetch in batches of 10 to avoid rate limiting
   var BATCH = 10;
@@ -300,15 +300,12 @@ async function init() {
       '</div>';
 
     renderPeriod(30);
-    // Find first recorded date
-    var allDates = Object.keys(allData).sort();
-    var firstDate = null;
-    for(var i=0;i<allDates.length;i++){
-      if(allData[allDates[i]] > 0){ firstDate = allDates[i]; break; }
-    }
-    if(firstDate){
-      var p = firstDate.split('-');
-      document.getElementById('first-date').textContent = 'מאז '+p[2]+'/'+p[1]+'/'+p[0];
+    // Show first recorded date
+    var sortedDates = Object.keys(allData).filter(function(d){return allData[d]>0;}).sort();
+    if (sortedDates.length > 0) {
+      var p = sortedDates[0].split('-');
+      var el = document.getElementById('first-date');
+      if (el) el.textContent = 'מאז ' + p[2] + '/' + p[1] + '/' + p[0];
     }
   } catch(e) {
     document.getElementById('main-content').innerHTML =
