@@ -48,7 +48,7 @@ jobs:
           d = launch
           while d <= today:
               key = d.strftime("%Y-%m-%d")
-              val = get(key)
+              val = get("d-" + key)
               if val is not None:
                   data["daily"][key] = val
                   updated += 1
