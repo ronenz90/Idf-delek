@@ -277,16 +277,17 @@ function doSearchFromCoords(){
   if(isNaN(lat)||isNaN(lon)){setStatus("\u05e7\u05d5\u05d0\u05d5\u05e8\u05d3\u05d9\u05e0\u05d0\u05d8\u05d5\u05ea \u05dc\u05d0 \u05ea\u05e7\u05d9\u05e0\u05d5\u05ea","err");return;}
   setStatus();doSearch(lat,lon);
 }
-// Visitor counter - counterapi.dev (CORS-enabled)
+// Visitor counter - total + daily key
 (function(){
   var today=new Date().toISOString().slice(0,10);
-  var ns="idf-delek";
-  var base="https://countapi.mileshilliard.com/api/v1";
-  fetch(base+"/hit/"+ns+"-visits")
+  var pfx="ronenz90-idf-delek";
+  // Hit total counter and show
+  fetch("https://countapi.mileshilliard.com/api/v1/hit/"+pfx+"-visits")
     .then(function(r){return r.json();})
-    .then(function(d){var el=document.getElementById("visit-count");if(el&&d.value!=null)el.textContent=Number(d.value).toLocaleString();})
-    .catch(function(){});
-  fetch(base+"/hit/"+ns+"-d-"+today).catch(function(){});
+    .then(function(d){var el=document.getElementById("visit-count");if(el&&d.value)el.textContent=Number(d.value).toLocaleString();})
+    .catch(function(){var el=document.getElementById("visit-count");if(el)el.textContent="\u2014";});
+  // Hit daily counter (for admin page time-series)
+  fetch("https://countapi.mileshilliard.com/api/v1/hit/"+pfx+"-d-"+today).catch(function(){});
 })();
 // Feedback
 function openFeedback(){
