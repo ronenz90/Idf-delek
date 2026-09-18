@@ -163,7 +163,7 @@ var userLat=null,userLon=null,leafletMap=null;
 var COORDS={};
 
 // Load coords.json (pre-built from Excel — instant, no geocoding)
-fetch("./coords.json",{cache:"force-cache"})
+fetch("./coords.json?v=3")
   .then(function(r){return r.json();})
   .then(function(d){
     COORDS=d;
